@@ -1,0 +1,57 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        RAILS_MASTER: [0]
+        QUNIT_RUN: [0, 1]
+        RUN_LINT: [0, 1]
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+    - name: Run a multi-line script
+      run: |
+        set -eox pipefail
+        wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
+        wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+        source ${HOME}/.nvm/nvm.sh
+        sudo apt-get update -y && sudo apt-get install -y gifsicle jpegoptim optipng jhead redis-server postgresql postgresql-client libpq-dev
+        sudo -u postgres createuser --superuser ${USER}
+        gem install bundler -v 1.17.3
+        nvm install 10.17.0
+        npm install -g svgo
+        node --version
+        git clone --depth=1 https://github.com/discourse/discourse-backup-uploads-to-s3.git plugins/discourse-backup-uploads-to-s3
+        git clone --depth=1 https://github.com/discourse/discourse-spoiler-alert.git plugins/discourse-spoiler-alert
+        git clone --depth=1 https://github.com/discourse/discourse-cakeday.git plugins/discourse-cakeday
+        git clone --depth=1 https://github.com/discourse/discourse-canned-replies.git plugins/discourse-canned-replies
+        git clone --depth=1 https://github.com/discourse/discourse-chat-integration.git plugins/discourse-chat-integration
+        git clone --depth=1 https://github.com/discourse/discourse-assign.git plugins/discourse-assign
+        git clone --depth=1 https://github.com/discourse/discourse-patreon.git plugins/discourse-patreon
+        git clone --depth=1 https://github.com/discourse/discourse-user-notes.git plugins/discourse-user-notes
+        git clone --depth=1 https://github.com/discourse/discourse-group-tracker
+        bash -c "if [ '${{ matrix.RAILS_MASTER }}' == '1' ]; then bundle update --retry=3 --jobs=3 arel rails seed-fu; fi"
+        bash -c "if [ '${{ matrix.RAILS_MASTER }}' == '0' ]; then bundle install --without development --deployment --retry=3 --jobs=3; fi"
+        bash -c "if [ '${{ matrix.QUNIT_RUN }}' == '1' ] || [ '$RUN_LINT' == '1' ]; then yarn install --dev; fi"
+        bash -c "if [ '${{ matrix.RUN_LINT }}' != '1' ]; then bundle exec rake db:create && LOAD_PLUGINS=1 bundle exec rake db:migrate; fi"
+        bash -c "
+                  if [ '${{ matrix.RUN_LINT }}' == '1' ]; then
+                    npx lefthook run lints
+                  else
+                    if [ '${{ matrix.QUNIT_RUN }}' == '1' ]; then
+                      bundle exec rake qunit:test['1200000'] && \
+                      bundle exec rake qunit:test['1200000','/wizard/qunit'] && \
+                      bundle exec rake plugin:qunit
+                    else
+                      bundle exec rspec && bundle exec rake plugin:spec
+                    fi
+                  fi
+                "
