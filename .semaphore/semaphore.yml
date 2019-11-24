@@ -18,6 +18,8 @@ blocks:
               https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant
               | sudo sh
             - nvm install node
+            - nvm alias default node
+            - npm install -g svgo
             - node --version
             - gem install bundler -v 1.17.3
             - sudo apt-get update -y && sudo apt-get install -y gifsicle jpegoptim optipng jhead redis-server postgresql postgresql-client libpq-dev
