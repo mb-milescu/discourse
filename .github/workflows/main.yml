@@ -17,6 +17,9 @@ jobs:
     - uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
     - name: Run a multi-line script
       run: |
         set -eox pipefail
@@ -28,8 +31,6 @@ jobs:
         gem install bundler -v 1.17.3
         nvm install 10.17.0
         npm install -g svgo
-        npm install @arkweid/lefthook
-        npm install eslint
         node --version
         git clone --depth=1 https://github.com/discourse/discourse-backup-uploads-to-s3.git plugins/discourse-backup-uploads-to-s3
         git clone --depth=1 https://github.com/discourse/discourse-spoiler-alert.git plugins/discourse-spoiler-alert
