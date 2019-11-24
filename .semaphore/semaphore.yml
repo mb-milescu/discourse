@@ -14,10 +14,7 @@ blocks:
             - checkout
             - sem-version ruby 2.6.5
             - sem-version node 10.17.0
-            - >-
-              wget -qO-
-              https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant
-              | sudo bash
+            - wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
             - npm install -g svgo
             - node --version
             - gem install bundler -v 1.17.3
