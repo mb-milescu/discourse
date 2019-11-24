@@ -24,12 +24,11 @@ jobs:
       run: |
         set -eox pipefail
         wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
-        wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-        source ${HOME}/.nvm/nvm.sh
+#        wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+#        source ${HOME}/.nvm/nvm.sh
         sudo apt-get update -y && sudo apt-get install -y gifsicle jpegoptim optipng jhead redis-server postgresql postgresql-client libpq-dev
         sudo -u postgres createuser --superuser ${USER}
         gem install bundler -v 1.17.3
-        nvm install 10.17.0
         npm install -g svgo
         npm install @arkweid/lefthook
         node --version
