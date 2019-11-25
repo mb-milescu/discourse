@@ -28,6 +28,7 @@ jobs:
         sudo -u postgres createuser --superuser ${USER}
         gem install bundler -v 1.17.3
         npm install -g svgo
+        npm install --save-dev --save-exact prettier
         npm install eslint --save-dev
         npm install @arkweid/lefthook --save-dev
         node --version
