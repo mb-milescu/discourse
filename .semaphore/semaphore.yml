@@ -17,8 +17,8 @@ blocks:
             - wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
             - node --version
             - gem install bundler -v 1.17.3
-            - sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main"
             - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+            - sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main"
             - sudo apt-get update
             - sudo apt-get install -y postgresql-9.6 gifsicle jpegoptim optipng jhead redis-server
             - sudo -u postgres createuser -s "${USER}"
