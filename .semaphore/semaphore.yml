@@ -15,10 +15,12 @@ blocks:
             - sem-version ruby 2.6.5
             - sem-version node 10.17.0
             - wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
-            - npm install -g svgo
             - node --version
             - gem install bundler -v 1.17.3
-            - sudo apt-get update -y && sudo apt-get install -y gifsicle jpegoptim optipng jhead redis-server postgresql postgresql-client libpq-dev
+            - sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main"
+            - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+            - sudo apt-get update
+            - sudo apt-get install -y postgresql-9.6 gifsicle jpegoptim optipng jhead redis-server
             - sudo -u postgres createuser -s "${USER}"
             - git clone --depth=1 https://github.com/discourse/discourse-backup-uploads-to-s3.git plugins/discourse-backup-uploads-to-s3
             - git clone --depth=1 https://github.com/discourse/discourse-spoiler-alert.git plugins/discourse-spoiler-alert
