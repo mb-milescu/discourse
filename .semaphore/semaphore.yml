@@ -13,7 +13,7 @@ blocks:
           commands:
             - checkout
             - sudo apt-get update && sudo apt-get install -y gifsicle jpegoptim optipng jhead
-            - sem-version ruby 2.6.5
+            - sem-version ruby 2.6.3
             - sem-version node 10.17.0
             - npm install -g svgo
             - sem-service start postgres
