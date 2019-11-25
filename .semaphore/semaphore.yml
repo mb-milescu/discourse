@@ -19,6 +19,7 @@ blocks:
             - gem install bundler -v 1.17.3
             - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
             - sem-service start postgres
+            - sem-service start redis
             - psql -U postgres -h localhost -c "CREATE USER ${USER};"
             - git clone --depth=1 https://github.com/discourse/discourse-backup-uploads-to-s3.git plugins/discourse-backup-uploads-to-s3
             - git clone --depth=1 https://github.com/discourse/discourse-spoiler-alert.git plugins/discourse-spoiler-alert
