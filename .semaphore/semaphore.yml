@@ -16,6 +16,7 @@ blocks:
             - sem-version node 10.17.0
             - sem-service start postgres
             - export PGHOST=127.0.0.1
+            - sudo sed -i 's:localhost:localhost localhost1:g' /etc/hosts
             - sem-service start redis
             - sudo -u postgres createuser -h localhost --superuser --no-password ${USER}
             - wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
