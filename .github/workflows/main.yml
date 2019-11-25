@@ -27,10 +27,7 @@ jobs:
         sudo apt-get update -y && sudo apt-get install -y gifsicle jpegoptim optipng jhead redis-server postgresql postgresql-client libpq-dev
         sudo -u postgres createuser --superuser ${USER}
         gem install bundler -v 1.17.3
-        npm install -g svgo
-        npm install --save-dev --save-exact prettier
-        npm install eslint --save-dev
-        npm install @arkweid/lefthook --save-dev
+        npm install
         node --version
         git clone --depth=1 https://github.com/discourse/discourse-backup-uploads-to-s3.git plugins/discourse-backup-uploads-to-s3
         git clone --depth=1 https://github.com/discourse/discourse-spoiler-alert.git plugins/discourse-spoiler-alert
