@@ -27,7 +27,6 @@ jobs:
         sudo apt-get update -y && sudo apt-get install -y gifsicle jpegoptim optipng jhead redis-server postgresql postgresql-client libpq-dev
         sudo -u postgres createuser --superuser ${USER}
         gem install bundler -v 1.17.3
-        yarn install
         node --version
         git clone --depth=1 https://github.com/discourse/discourse-backup-uploads-to-s3.git plugins/discourse-backup-uploads-to-s3
         git clone --depth=1 https://github.com/discourse/discourse-spoiler-alert.git plugins/discourse-spoiler-alert
@@ -40,7 +39,7 @@ jobs:
         git clone --depth=1 https://github.com/discourse/discourse-group-tracker
         bash -c "if [ '${{ matrix.RAILS_MASTER }}' == '1' ]; then bundle update --retry=3 --jobs=3 arel rails seed-fu; fi"
         bash -c "if [ '${{ matrix.RAILS_MASTER }}' == '0' ]; then bundle install --without development --deployment --retry=3 --jobs=3; fi"
-        bash -c "if [ '${{ matrix.QUNIT_RUN }}' == '1' ] || [ '$RUN_LINT' == '1' ]; then yarn install --dev; fi"
+        bash -c "if [ '${{ matrix.QUNIT_RUN }}' == '1' ] || [ '${{ matrix.RUN_LINT }}' == '1' ]; then yarn install --dev; fi"
         bash -c "if [ '${{ matrix.RUN_LINT }}' != '1' ]; then bundle exec rake db:create && LOAD_PLUGINS=1 bundle exec rake db:migrate; fi"
         bash -c "
                   if [ '${{ matrix.RUN_LINT }}' == '1' ]; then
