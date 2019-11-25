@@ -36,7 +36,8 @@ jobs:
         wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
         sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main"
         sudo apt-get update
-        sudo apt-get install -y postgresql-9.6 libpq-dev gifsicle jpegoptim optipng jhead redis-server
+        sudo apt-get install -y libpq-dev gifsicle jpegoptim optipng jhead redis-server
+        export PGHOST=127.0.0.1
         sudo -u postgres createuser --superuser ${USER}
         gem install bundler -v 1.17.3
         npm install -g svgo
