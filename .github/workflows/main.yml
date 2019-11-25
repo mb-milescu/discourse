@@ -12,12 +12,20 @@ jobs:
         RAILS_MASTER: [0]
         QUNIT_RUN: [0, 1]
         RUN_LINT: [0, 1]
-
+    
+    services:
+      postgres:
+        image: postgres:9.6
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-ruby@v1
       with:
-        ruby-version: 2.6.x
+        ruby-version: 2.6.3
     - uses: actions/setup-node@v1
       with:
         node-version: '10.x'
