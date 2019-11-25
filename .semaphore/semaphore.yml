@@ -12,8 +12,10 @@ blocks:
         - name: build&test
           commands:
             - checkout
+            - sudo apt-get update && sudo apt-get install -y gifsicle jpegoptim optipng jhead
             - sem-version ruby 2.6.5
             - sem-version node 10.17.0
+            - sudo npm install -g svgo
             - sem-service start postgres
             - export PGHOST=127.0.0.1
             - sudo sed -i 's:localhost:localhost localhost1:g' /etc/hosts
