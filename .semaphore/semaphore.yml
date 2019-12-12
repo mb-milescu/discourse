@@ -33,16 +33,18 @@ blocks:
             - git config --global user.email "ci@ci.invalid" && git config --global user.name "Discourse CI"
 
         - name: Setup packages
-          commands: |
-            sudo apt-get -yqq install postgresql-client libpq-dev gifsicle jpegoptim optipng jhead && \
-            wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
+          commands:
+            - |-
+              sudo apt-get -yqq install postgresql-client libpq-dev gifsicle jpegoptim optipng jhead && \
+              wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
 
         - name: Setup redis
-          commands: |
-            if [ ${BUILD_TYPE} != "LINT" ]
-            then 
-              sem-service start redis
-            fi
+          commands:
+            - |-
+              if [ ${BUILD_TYPE} != "LINT" ]
+              then 
+                sem-service start redis
+              fi
 
         - name: Setup ruby
           commands:
