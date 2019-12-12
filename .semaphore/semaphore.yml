@@ -6,18 +6,6 @@ agent:
     os_image: ubuntu1804
 
 blocks:
-  - name: dependencies
-    task:
-      jobs:
-        - name: install ruby/node dependencies
-          commands:
-            - checkout
-            - sem-version ruby 2.6.3
-            - cache restore
-            - gem install bundler -v 1.17.3 --no-doc
-            - bundle install --without development --deployment --jobs 4 --retry 3
-            - yarn install --dev
-            - cache store
   - name: TEST
     task:
       env_vars:
@@ -59,6 +47,7 @@ blocks:
                 sudo -u postgres createuser -h ${PGHOST} --superuser ${PGUSER}
                 bin/rake db:create && bin/rake db:migrate
               fi
+            - cache store  
       jobs:
         - name: Testing
           commands:
