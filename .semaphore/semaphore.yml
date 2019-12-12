@@ -64,32 +64,36 @@ blocks:
             - cache store
 
         - name: Checkout official plugins
-          commands: |
-            if [ ${TARGET} == "PLUGINS" ]
-            then
-              bin/rake plugin:install_all_official
-            fi      
+          commands:
+            - |-
+              if [ ${TARGET} == "PLUGINS" ]
+              then
+                bin/rake plugin:install_all_official
+              fi      
 
         - name: Create database    
-          commands: |
-            if [ ${BUILD_TYPE} != "LINT" ]
-            then
-              bin/rake db:create && bin/rake db:migrate
-            fi
+          commands: 
+            - |-
+              if [ ${BUILD_TYPE} != "LINT" ]
+              then
+                bin/rake db:create && bin/rake db:migrate
+              fi
 
         - name: Create parallel databases    
-          commands: |
-            if [ ${BUILD_TYPE} == "BACKEND" && ${TARGET} == "CORE" ]
-            then
-              bin/rake parallel:create && bin/rake parallel:migrate
-            fi     
+          commands:
+            - |-
+              if [ ${BUILD_TYPE} == "BACKEND" && ${TARGET} == "CORE" ]
+              then
+                bin/rake parallel:create && bin/rake parallel:migrate
+              fi     
 
         - name: Rubocop    
-          commands: |
-            if [ ${BUILD_TYPE} == "LINT" ]
-            then
-              bundle exec rubocop .
-            fi
+          commands:
+            - |-
+              if [ ${BUILD_TYPE} == "LINT" ]
+              then
+                bundle exec rubocop .
+              fi
 
 
           matrix:
