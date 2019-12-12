@@ -47,7 +47,7 @@ blocks:
               then
                 sem-service start redis
                 sem-service start postgres
-                sudo -u postgres createuser -h ${PGHOST} --superuser ${USER}
+                sudo -u postgres createuser -h ${PGHOST} --superuser ${PGUSER}
                 bin/rake db:create && bin/rake db:migrate
               fi
       jobs:
