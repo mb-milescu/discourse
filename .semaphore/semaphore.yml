@@ -1,66 +1,31 @@
-version: v1.0
-name: Ruby
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
 
+matrix:
+  - env_var: build_types
+    values: [ "BACKEND", "FRONTEND", "LINT" ]
+  - env_var: target
+    values: [ "PLUGINS", "CORE" ]
+
+env:
+    DISCOURSE_HOSTNAME: www.example.com
+    RUBY_GLOBAL_METHOD_CACHE_SIZE: 131072
+    BUILD_TYPE: ${{ matrix.build_types }}
+    TARGET: ${{ matrix.target }}
+    RAILS_ENV: test
+    PGHOST: localhost
+    PGUSER: discourse
+    PGPASSWORD: discourse
+    
+    # ruby: "2.6.3"
+    # postgres: "10"
+    # redis: "4.x"
 blocks:
   - name: build
     task:
       jobs:
         - name: build&test
           commands:
-            - checkout
-            - sudo apt-get update && sudo apt-get install -y gifsicle jpegoptim optipng jhead
-            - sem-version ruby 2.6.3
-            - sem-version node 10.17.0
-            - npm install -g svgo
-            - sem-service start postgres
-            - export PGHOST=127.0.0.1
-            - sudo sed -i 's:localhost:localhost localhost1:g' /etc/hosts
-            - sem-service start redis
-            - sudo -u postgres createuser -h localhost --superuser --no-password ${USER}
-            - wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
-            - gem install bundler -v 1.17.3
-            - git clone --depth=1 https://github.com/discourse/discourse-backup-uploads-to-s3.git plugins/discourse-backup-uploads-to-s3
-            - git clone --depth=1 https://github.com/discourse/discourse-spoiler-alert.git plugins/discourse-spoiler-alert
-            - git clone --depth=1 https://github.com/discourse/discourse-cakeday.git plugins/discourse-cakeday
-            - git clone --depth=1 https://github.com/discourse/discourse-canned-replies.git plugins/discourse-canned-replies
-            - git clone --depth=1 https://github.com/discourse/discourse-chat-integration.git plugins/discourse-chat-integration
-            - git clone --depth=1 https://github.com/discourse/discourse-assign.git plugins/discourse-assign
-            - git clone --depth=1 https://github.com/discourse/discourse-patreon.git plugins/discourse-patreon
-            - git clone --depth=1 https://github.com/discourse/discourse-user-notes.git plugins/discourse-user-notes
-            - git clone --depth=1 https://github.com/discourse/discourse-group-tracker
-            - bash -c "if [ '${RAILS_MASTER}' == '1' ]; then bundle update --retry=3 --jobs=3 arel rails seed-fu; fi"
-            - bash -c "if [ '${RAILS_MASTER}' == '0' ]; then bundle install --without development --deployment --retry=3 --jobs=3; fi"
-            - bash -c "if [ '${QUNIT_RUN}' == '1' ] || [ '${RUN_LINT}' == '1' ]; then yarn install --dev; fi"
-            - bash -c "if [ '${RUN_LINT}' != '1' ]; then bundle exec rake db:create && LOAD_PLUGINS=1 bundle exec rake db:migrate; fi"
-            - >-
-              bash -c "
-                    if [ '${RUN_LINT}' == '1' ]; then
-                      npx lefthook run lints
-                    else
-                      if [ '${QUNIT_RUN}' == '1' ]; then
-                        bundle exec rake qunit:test['1200000'] && \
-                        bundle exec rake qunit:test['1200000','/wizard/qunit'] && \
-                        bundle exec rake plugin:qunit
-                      else
-                        bundle exec rspec && bundle exec rake plugin:spec
-                      fi
-                    fi
-                  "
-          matrix:
-            - env_var: RAILS_MASTER
-              values: ["0"]
-            - env_var: QUNIT_RUN
-              values: ["0", "1"]
-            - env_var: RUN_LINT
-              values: ["0", "1"]
-      env_vars:
-        - name: DISCOURSE_HOSTNAME
-          value: www.example.com
-        - name: RUBY_GLOBAL_METHOD_CACHE_SIZE
-          value: '131072'
-    skip:
-      when: branch != 'master' AND branch != 'beta' AND branch != 'stable'
+            - checkout    
