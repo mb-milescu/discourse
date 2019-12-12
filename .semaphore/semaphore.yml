@@ -19,8 +19,7 @@ blocks:
           value: localhost
         - name: PGUSER
           value: discourse
-        - name: PGPASSWORD
-          value: discourse
+
       prologue:
           commands:
             - checkout
@@ -33,18 +32,15 @@ blocks:
             - bundle install --without development --deployment --jobs 4 --retry 3
             - yarn install --dev
             - |-
-              if [ "${TARGET}" == "PLUGINS" ]
-              then
+              if [ "${TARGET}" == "PLUGINS" ]; then
                 bin/rake plugin:install_all_official
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "BACKEND" ] &&" [ ${TARGET}" == "CORE" ]
-              then
+              if [ "${BUILD_TYPE}" == "BACKEND" ] &&" [ ${TARGET}" == "CORE" ]; then
                 bin/rake parallel:create && bin/rake parallel:migrate
               fi
             - |-
-              if [ "${BUILD_TYPE}" != "LINT" ]
-              then
+              if [ "${BUILD_TYPE}" != "LINT" ]; then
                 sem-service start redis
                 sem-service start postgres
                 sudo -u postgres createuser -h ${PGHOST} --superuser ${PGUSER}
@@ -54,31 +50,26 @@ blocks:
         - name: Testing
           commands:
             - |-
-              if [ "${BUILD_TYPE}" == "LINT" ]
-              then
+              if [ "${BUILD_TYPE}" == "LINT" ]; then
                 bundle exec rubocop .
                 yarn eslint app/assets/javascripts test/javascripts && yarn eslint --ext .es6 app/assets/javascripts test/javascripts plugins
                 yarn prettier --list-different "app/assets/stylesheets/**/*.scss" "app/assets/javascripts/**/*.es6" "test/javascripts/**/*.es6" "plugins/**/*.scss" "plugins/**/*.es6"
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "BACKEND" ] && [ "${TARGET}" == "CORE" ]
-              then
+              if [ "${BUILD_TYPE}" == "BACKEND" ] && [ "${TARGET}" == "CORE" ]; then
                 bin/turbo_rspec && bin/rake plugin:spec
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "BACKEND" ] && [ "${TARGET}" == "PLUGINS" ]
-              then
+              if [ "${BUILD_TYPE}" == "BACKEND" ] && [ "${TARGET}" == "PLUGINS" ]; then
                 bin/rake plugin:spec
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "FRONTEND" ] && [ "${TARGET}" == "CORE" ]
-              then
+              if [ "${BUILD_TYPE}" == "FRONTEND" ] && [ "${TARGET}" == "CORE" ]; then
                 bundle exec rake qunit:test['1200000']
                 bundle exec rake qunit:test['1200000','/wizard/qunit']
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "FRONTEND" ]   
-              then
+              if [ "${BUILD_TYPE}" == "FRONTEND" ]; then
                 bundle exec rake plugin:qunit
               fi
 
