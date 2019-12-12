@@ -23,80 +23,45 @@ blocks:
           value: discourse
         - name: PGPASSWORD
           value: discourse
-      jobs:
-        - name: Checkout
+      prologue:
           commands:
             - checkout
-
-        - name: Setup Git
-          commands:
             - git config --global user.email "ci@ci.invalid" && git config --global user.name "Discourse CI"
-
-        - name: Setup packages
-          commands:
             - |-
-              sudo apt-get -yqq install postgresql-client libpq-dev gifsicle jpegoptim optipng jhead && \
-              wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
-
-        - name: Setup redis
-          commands:
+                sudo apt-get -yqq install postgresql-client libpq-dev gifsicle jpegoptim optipng jhead && \
+                wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
             - |-
               if [ ${BUILD_TYPE} != "LINT" ]
-              then 
+              then
                 sem-service start redis
               fi
-
-        - name: Setup ruby
-          commands:
-            - sem-version ruby 2.6.3 
-
-        - name: Setup bundler
-          commands: 
+            - sem-version ruby 2.6.3
             - gem install bundler -v 1.17.3 --no-doc
-            - cache store      
-
-        - name: Setup gems
-          commands: 
-            - bundle install --without development --deployment --jobs 4 --retry 3
-            - cache store
-
-        - name: Yarn install
-          commands: 
+            - bundle install --without development --deployment --jobs 4 --retry 3 
             - yarn install --dev
-            - cache store
-
-        - name: Checkout official plugins
-          commands:
             - |-
               if [ ${TARGET} == "PLUGINS" ]
               then
                 bin/rake plugin:install_all_official
-              fi      
-
-        - name: Create database    
-          commands: 
+              fi
             - |-
               if [ ${BUILD_TYPE} != "LINT" ]
               then
                 bin/rake db:create && bin/rake db:migrate
               fi
-
-        - name: Create parallel databases    
-          commands:
             - |-
               if [ ${BUILD_TYPE} == "BACKEND" && ${TARGET} == "CORE" ]
               then
                 bin/rake parallel:create && bin/rake parallel:migrate
-              fi     
-
-        - name: Rubocop    
+              fi
+      jobs:
+        - name: Rubocop
           commands:
             - |-
               if [ ${BUILD_TYPE} == "LINT" ]
               then
                 bundle exec rubocop .
-              fi
-
+              fi        
 
           matrix:
             - env_var: build_types
