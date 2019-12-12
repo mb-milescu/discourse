@@ -5,18 +5,14 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 
-    
-    # ruby: "2.6.3"
-    # postgres: "10"
-    # redis: "4.x"
 blocks:
   - name: build
     task:
       env:
         DISCOURSE_HOSTNAME: www.example.com
         RUBY_GLOBAL_METHOD_CACHE_SIZE: 131072
-        BUILD_TYPE: ${{ matrix.build_types }}
-        TARGET: ${{ matrix.target }}
+        #BUILD_TYPE: ${{ matrix.build_types }}
+        #TARGET: ${{ matrix.target }}
         RAILS_ENV: test
         PGHOST: localhost
         PGUSER: discourse
