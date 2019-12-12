@@ -1,25 +1,10 @@
 version: v1.0
-name: test
+name: 
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
 
-matrix:
-  - env_var: build_types
-    values: [ "BACKEND", "FRONTEND", "LINT" ]
-  - env_var: target
-    values: [ "PLUGINS", "CORE" ]
-
-env:
-    DISCOURSE_HOSTNAME: www.example.com
-    RUBY_GLOBAL_METHOD_CACHE_SIZE: 131072
-    BUILD_TYPE: ${{ matrix.build_types }}
-    TARGET: ${{ matrix.target }}
-    RAILS_ENV: test
-    PGHOST: localhost
-    PGUSER: discourse
-    PGPASSWORD: discourse
     
     # ruby: "2.6.3"
     # postgres: "10"
@@ -27,7 +12,21 @@ env:
 blocks:
   - name: build
     task:
+      env:
+        DISCOURSE_HOSTNAME: www.example.com
+        RUBY_GLOBAL_METHOD_CACHE_SIZE: 131072
+        BUILD_TYPE: ${{ matrix.build_types }}
+        TARGET: ${{ matrix.target }}
+        RAILS_ENV: test
+        PGHOST: localhost
+        PGUSER: discourse
+        PGPASSWORD: discourse
       jobs:
         - name: build&test
           commands:
-            - checkout    
+            - checkout
+          matrix:
+            - env_var: build_types
+              values: [ "BACKEND", "FRONTEND", "LINT" ]
+            - env_var: target
+              values: [ "PLUGINS", "CORE" ]    
