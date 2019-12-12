@@ -13,8 +13,6 @@ blocks:
           value: www.example.com
         - name: RUBY_GLOBAL_METHOD_CACHE_SIZE
           value: "131072"
-        #BUILD_TYPE: ${{ matrix.build_types }}
-        #TARGET: ${{ matrix.target }}
         - name: RAILS_ENV
           value: test
         - name: PGHOST
@@ -32,7 +30,7 @@ blocks:
                 wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
             - sem-version ruby 2.6.3
             - gem install bundler -v 1.17.3 --no-doc
-            - bundle install --without development --deployment --jobs 4 --retry 3 
+            - bundle install --without development --deployment --jobs 4 --retry 3
             - yarn install --dev
             - |-
               if [ ${TARGET} == "PLUGINS" ]
@@ -48,9 +46,9 @@ blocks:
               if [ ${BUILD_TYPE} != "LINT" ]
               then
                 sem-service start redis
+                sem-service start postgres
                 bin/rake db:create && bin/rake db:migrate
               fi
-            - cache store    
       jobs:
         - name: Testing
           commands:
@@ -59,7 +57,29 @@ blocks:
               then
                 bundle exec rubocop .
                 yarn eslint app/assets/javascripts test/javascripts && yarn eslint --ext .es6 app/assets/javascripts test/javascripts plugins
-              fi        
+                yarn prettier --list-different "app/assets/stylesheets/**/*.scss" "app/assets/javascripts/**/*.es6" "test/javascripts/**/*.es6" "plugins/**/*.scss" "plugins/**/*.es6"
+              fi
+            - |-
+              if [ ${BUILD_TYPE} == "BACKEND" && ${TARGET} == "CORE" ]   
+              then
+                bin/turbo_rspec && bin/rake plugin:spec
+              fi
+            - |-
+              if [ ${BUILD_TYPE} == "BACKEND" && ${TARGET} == "PLUGINS" ]   
+              then
+                bin/rake plugin:spec
+              fi
+            - |-
+              if [ ${BUILD_TYPE} == "FRONTEND" && ${TARGET} == "CORE" ]   
+              then
+                bundle exec rake qunit:test['1200000']
+                bundle exec rake qunit:test['1200000','/wizard/qunit']
+              fi
+            - |-
+              if [ ${BUILD_TYPE} == "FRONTEND" ]   
+              then
+                bundle exec rake plugin:qunit
+              fi
 
           matrix:
             - env_var: build_types
