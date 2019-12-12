@@ -6,7 +6,19 @@ agent:
     os_image: ubuntu1804
 
 blocks:
-  - name: build
+  - name: dependencies
+    task:
+      jobs:
+        - name: install ruby/node dependencies
+          commands:
+            - checkout
+            - sem-version ruby 2.6.3
+            - cache restore
+            - gem install bundler -v 1.17.3 --no-doc
+            - bundle install --without development --deployment --jobs 4 --retry 3
+            - yarn install --dev
+            - cache store
+  - name: TEST
     task:
       env_vars:
         - name: DISCOURSE_HOSTNAME
@@ -23,14 +35,12 @@ blocks:
       prologue:
           commands:
             - checkout
+            - sem-version ruby 2.6.3
+            - cache restore
             - git config --global user.email "ci@ci.invalid" && git config --global user.name "Discourse CI"
             - |-
                 sudo apt-get -yqq install postgresql-client libpq-dev gifsicle jpegoptim optipng jhead && \
                 wget -qO- https://raw.githubusercontent.com/discourse/discourse_docker/master/image/base/install-pngquant | sudo sh
-            - sem-version ruby 2.6.3
-            - gem install bundler -v 1.17.3 --no-doc
-            - bundle install --without development --deployment --jobs 4 --retry 3
-            - yarn install --dev
             - |-
               if [ "${TARGET}" == "PLUGINS" ]; then
                 bin/rake plugin:install_all_official
