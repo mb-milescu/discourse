@@ -12,7 +12,7 @@ blocks:
         - name: DISCOURSE_HOSTNAME
           value: www.example.com
         - name: RUBY_GLOBAL_METHOD_CACHE_SIZE
-          value: 131072
+          value: "131072"
         #BUILD_TYPE: ${{ matrix.build_types }}
         #TARGET: ${{ matrix.target }}
         - name: RAILS_ENV
