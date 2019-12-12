@@ -37,7 +37,7 @@ blocks:
                 bin/rake plugin:install_all_official
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "BACKEND" ] &&" [ ${TARGET}" == "CORE" ]; then
+              if [ "${BUILD_TYPE}" == "BACKEND" ] && [ "${TARGET}" == "CORE" ]; then
                 bin/rake parallel:create && bin/rake parallel:migrate
               fi
             - |-
