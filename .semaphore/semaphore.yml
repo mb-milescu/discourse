@@ -38,7 +38,7 @@ blocks:
                 bin/rake plugin:install_all_official
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "BACKEND" &&" ${TARGET}" == "CORE" ]
+              if [ "${BUILD_TYPE}" == "BACKEND" ] &&" [ ${TARGET}" == "CORE" ]
               then
                 bin/rake parallel:create && bin/rake parallel:migrate
               fi
@@ -61,17 +61,17 @@ blocks:
                 yarn prettier --list-different "app/assets/stylesheets/**/*.scss" "app/assets/javascripts/**/*.es6" "test/javascripts/**/*.es6" "plugins/**/*.scss" "plugins/**/*.es6"
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "BACKEND" && "${TARGET}" == "CORE" ]   
+              if [ "${BUILD_TYPE}" == "BACKEND" ] && [ "${TARGET}" == "CORE" ]
               then
                 bin/turbo_rspec && bin/rake plugin:spec
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "BACKEND" && "${TARGET}" == "PLUGINS" ]   
+              if [ "${BUILD_TYPE}" == "BACKEND" ] && [ "${TARGET}" == "PLUGINS" ]
               then
                 bin/rake plugin:spec
               fi
             - |-
-              if [ "${BUILD_TYPE}" == "FRONTEND" && "${TARGET}" == "CORE" ]   
+              if [ "${BUILD_TYPE}" == "FRONTEND" ] && [ "${TARGET}" == "CORE" ]
               then
                 bundle exec rake qunit:test['1200000']
                 bundle exec rake qunit:test['1200000','/wizard/qunit']
