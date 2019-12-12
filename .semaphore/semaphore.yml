@@ -74,7 +74,7 @@ blocks:
               fi
 
           matrix:
-            - env_var: build_types
+            - env_var: BUILD_TYPE
               values: [ "BACKEND", "FRONTEND", "LINT" ]
-            - env_var: target
+            - env_var: TARGET
               values: [ "PLUGINS", "CORE" ]    
