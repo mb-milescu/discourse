@@ -8,15 +8,21 @@ agent:
 blocks:
   - name: build
     task:
-      env:
-        DISCOURSE_HOSTNAME: www.example.com
-        RUBY_GLOBAL_METHOD_CACHE_SIZE: 131072
+      env_vars:
+        - name: DISCOURSE_HOSTNAME
+          value: www.example.com
+        - name: RUBY_GLOBAL_METHOD_CACHE_SIZE
+          value: 131072
         #BUILD_TYPE: ${{ matrix.build_types }}
         #TARGET: ${{ matrix.target }}
-        RAILS_ENV: test
-        PGHOST: localhost
-        PGUSER: discourse
-        PGPASSWORD: discourse
+        - name: RAILS_ENV
+          value: test
+        - name: PGHOST
+          value: localhost
+        - name: PGUSER
+          value: discourse
+        - name: PGPASSWORD
+          value: discourse
       jobs:
         - name: build&test
           commands:
